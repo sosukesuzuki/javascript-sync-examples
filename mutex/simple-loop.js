@@ -1,3 +1,4 @@
+import os from "node:os";
 import worker_threads, { workerData } from "node:worker_threads";
 import { sleep } from "../utils/sleep.js";
 
@@ -40,6 +41,7 @@ function main() {
         sleep(1000);
         // ここでクリティカルセクション
         console.log(`${name} ended something.`);
+        console.log();
 
         tasRelease(lock);
         break;
