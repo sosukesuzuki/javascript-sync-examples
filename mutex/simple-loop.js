@@ -35,20 +35,17 @@ function main() {
   } else {
     const { name, sharedLock } = workerData;
     const lock = new Uint8Array(sharedLock);
-    function retry() {
+    while (true) {
       if (testAndSet(lock)) {
         console.log(`${name} started something.`);
         sleep(1000);
         // ここでクリティカルセクション
         console.log(`${name} ended something.`);
-      } else {
-        // retry 間隔が短すぎると Maximum call stack size になるので 10ms 待つ
-        sleep(10);
-        retry();
+
+        tasRelease(lock);
+        break;
       }
-      tasRelease(lock);
     }
-    retry();
   }
 }
 
