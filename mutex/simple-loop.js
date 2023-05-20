@@ -26,11 +26,10 @@ function main() {
   const sharedLock = new SharedArrayBuffer(1);
 
   if (worker_threads.isMainThread) {
-    new worker_threads.Worker(new URL(import.meta.url), {
-      workerData: { name: "worker1", sharedLock },
-    });
-    new worker_threads.Worker(new URL(import.meta.url), {
-      workerData: { name: "worker2", sharedLock },
+    os.cpus().forEach((_, index) => {
+      new worker_threads.Worker(new URL(import.meta.url), {
+        workerData: { name: `worker${index}`, sharedLock },
+      });
     });
   } else {
     const { name, sharedLock } = workerData;

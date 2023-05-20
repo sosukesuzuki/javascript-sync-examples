@@ -1,3 +1,4 @@
+import os from "node:os";
 import worker_threads, { workerData } from "node:worker_threads";
 import { sleep } from "../utils/sleep.js";
 
@@ -34,11 +35,10 @@ function main() {
   const sharedLock = new SharedArrayBuffer(4);
 
   if (worker_threads.isMainThread) {
-    new worker_threads.Worker(new URL(import.meta.url), {
-      workerData: { name: "worker1", sharedLock },
-    });
-    new worker_threads.Worker(new URL(import.meta.url), {
-      workerData: { name: "worker2", sharedLock },
+    os.cpus().forEach((_, index) => {
+      new worker_threads.Worker(new URL(import.meta.url), {
+        workerData: { name: `worker${index}`, sharedLock },
+      });
     });
   } else {
     const { name, sharedLock } = workerData;
