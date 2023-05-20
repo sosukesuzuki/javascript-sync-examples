@@ -1,4 +1,3 @@
-import os from "node:os";
 import worker_threads, { workerData } from "node:worker_threads";
 import { sleep } from "../utils/sleep.js";
 
