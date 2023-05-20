@@ -1,4 +1,5 @@
 import worker_threads, { workerData } from "node:worker_threads";
+import { sleep } from "../utils/sleep.js";
 
 /**
  * lock の test と set をアトミックに行う
@@ -15,14 +16,6 @@ function testAndSet(lock) {
  */
 function tasRelease(lock) {
   Atomics.store(lock, 0, 0);
-}
-
-/**
- * スレッドをブロックして眠る
- * @param {number} n
- */
-function msleep(n) {
-  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, n);
 }
 
 function main() {
@@ -45,12 +38,12 @@ function main() {
     function retry() {
       if (testAndSet(lock)) {
         console.log(`${name} started something.`);
-        msleep(1000);
+        sleep(1000);
         // ここでクリティカルセクション
         console.log(`${name} ended something.`);
       } else {
         // retry 間隔が短すぎると Maximum call stack size になるので 10ms 待つ
-        msleep(10);
+        sleep(10);
         retry();
       }
       tasRelease(lock);
